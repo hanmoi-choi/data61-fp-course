@@ -39,6 +39,9 @@ library
                       , doctest >= 0.9.7
                       , containers >= 0.4.0.0
                       , array >= 0.4
+                      , directory >= 1.3
+                      , filepath >= 1.4
+                      , tasty
 
   ghc-options:        -Wall
                       -fno-warn-unused-binds
