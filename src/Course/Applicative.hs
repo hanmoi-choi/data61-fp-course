@@ -48,8 +48,8 @@ infixl 4 <*>
   (a -> b)
   -> f a
   -> f b
-(<$$>) =
-  error "todo: Course.Applicative#(<$$>)"
+(<$$>) = (<*>) . pure
+
 
 -- | Insert into ExactlyOne.
 --
@@ -61,14 +61,13 @@ instance Applicative ExactlyOne where
   pure ::
     a
     -> ExactlyOne a
-  pure =
-    error "todo: Course.Applicative pure#instance ExactlyOne"
-  (<*>) :: 
+  pure = ExactlyOne
+
+  (<*>) ::
     ExactlyOne (a -> b)
     -> ExactlyOne a
     -> ExactlyOne b
-  (<*>) =
-    error "todo: Course.Applicative (<*>)#instance ExactlyOne"
+  (<*>) (ExactlyOne f) (ExactlyOne b) = ExactlyOne $ f b
 
 -- | Insert into a List.
 --
@@ -80,14 +79,13 @@ instance Applicative List where
   pure ::
     a
     -> List a
-  pure =
-    error "todo: Course.Applicative pure#instance List"
+  pure a = a :. Nil
+
   (<*>) ::
     List (a -> b)
     -> List a
     -> List b
-  (<*>) =
-    error "todo: Course.Apply (<*>)#instance List"
+  (<*>) fa aa = foldRight (\f acc -> (map f aa) ++ acc) Nil fa
 
 -- | Insert into an Optional.
 --
@@ -105,14 +103,15 @@ instance Applicative Optional where
   pure ::
     a
     -> Optional a
-  pure =
-    error "todo: Course.Applicative pure#instance Optional"
+  pure = Full
+
   (<*>) ::
     Optional (a -> b)
     -> Optional a
     -> Optional b
-  (<*>) =
-    error "todo: Course.Apply (<*>)#instance Optional"
+  (<*>) _ Empty = Empty
+  (<*>) Empty _ = Empty
+  (<*>) (Full f) (Full v) = Full $ f v
 
 -- | Insert into a constant function.
 --
@@ -136,15 +135,12 @@ instance Applicative ((->) t) where
   pure ::
     a
     -> ((->) t a)
-  pure =
-    error "todo: Course.Applicative pure#((->) t)"
+  pure = const
   (<*>) ::
     ((->) t (a -> b))
     -> ((->) t a)
     -> ((->) t b)
-  (<*>) =
-    error "todo: Course.Apply (<*>)#instance ((->) t)"
-
+  (<*>) f g = \t -> f t (g t)
 
 -- | Apply a binary function in the environment.
 --
@@ -171,8 +167,7 @@ lift2 ::
   -> f a
   -> f b
   -> f c
-lift2 =
-  error "todo: Course.Applicative#lift2"
+lift2 abc a b = abc <$> a <*> b
 
 -- | Apply a ternary function in the environment.
 --
@@ -203,8 +198,7 @@ lift3 ::
   -> f b
   -> f c
   -> f d
-lift3 =
-  error "todo: Course.Applicative#lift3"
+lift3 abcd a b d = abcd <$> a <*> b <*> d
 
 -- | Apply a quaternary function in the environment.
 --
@@ -236,8 +230,7 @@ lift4 ::
   -> f c
   -> f d
   -> f e
-lift4 =
-  error "todo: Course.Applicative#lift4"
+lift4 abcde a b c d = abcde <$> a <*> b <*> c <*> d
 
 -- | Apply, discarding the value of the first argument.
 -- Pronounced, right apply.
