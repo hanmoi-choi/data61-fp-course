@@ -1,16 +1,16 @@
-{-# LANGUAGE NoImplicitPrelude #-}
+{-# LANGUAGE InstanceSigs        #-}
+{-# LANGUAGE NoImplicitPrelude   #-}
+{-# LANGUAGE RebindableSyntax    #-}
 {-# LANGUAGE ScopedTypeVariables #-}
-{-# LANGUAGE InstanceSigs #-}
-{-# LANGUAGE RebindableSyntax #-}
 
 module Course.Applicative where
 
-import Course.Core
-import Course.ExactlyOne
-import Course.Functor
-import Course.List
-import Course.Optional
-import qualified Prelude as P(fmap, return, (>>=))
+import           Course.Core
+import           Course.ExactlyOne
+import           Course.Functor
+import           Course.List
+import           Course.Optional
+import qualified Prelude           as P (fmap, return, (>>=))
 
 -- | All instances of the `Applicative` type-class must satisfy three laws.
 -- These laws are not checked by the compiler. These laws are given as:
@@ -85,7 +85,7 @@ instance Applicative List where
     List (a -> b)
     -> List a
     -> List b
-  (<*>) fa aa = foldRight (\f acc -> (map f aa) ++ acc) Nil fa
+  (<*>) fa aa = foldRight (\f acc -> map f aa ++ acc) Nil fa
 
 -- | Insert into an Optional.
 --
@@ -109,8 +109,8 @@ instance Applicative Optional where
     Optional (a -> b)
     -> Optional a
     -> Optional b
-  (<*>) _ Empty = Empty
-  (<*>) Empty _ = Empty
+  (<*>) _ Empty           = Empty
+  (<*>) Empty _           = Empty
   (<*>) (Full f) (Full v) = Full $ f v
 
 -- | Insert into a constant function.
@@ -120,7 +120,8 @@ instance Applicative Optional where
 --
 -- >>> ((+) <*> (+5)) 3
 -- 11
---
+
+  --
 -- >>> ((+) <*> (+5)) 1
 -- 7
 --
@@ -134,13 +135,13 @@ instance Applicative Optional where
 instance Applicative ((->) t) where
   pure ::
     a
-    -> ((->) t a)
+    -> (->) t a
   pure = const
   (<*>) ::
-    ((->) t (a -> b))
+    (->) t (a -> b)
     -> ((->) t a)
     -> ((->) t b)
-  (<*>) f g = \t -> f t (g t)
+  (<*>) f g t = f t (g t)
 
 -- | Apply a binary function in the environment.
 --
@@ -255,8 +256,7 @@ lift4 abcde a b c d = abcde <$> a <*> b <*> c <*> d
   f a
   -> f b
   -> f b
-(*>) =
-  error "todo: Course.Applicative#(*>)"
+(*>) = undefined
 
 -- | Apply, discarding the value of the second argument.
 -- Pronounced, left apply.

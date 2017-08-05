@@ -21,7 +21,6 @@ import qualified Numeric             as N
 import qualified Prelude             as P
 import qualified System.Environment  as E
 
-
 -- $setup
 -- >>> import Test.QuickCheck
 -- >>> import Course.Core(even, id, const)
@@ -244,10 +243,10 @@ seqOptional ::
   -> Optional (List a)
 seqOptional =
   let
-      help _ Empty = Empty
+      help _ Empty       = Empty
       help (v) (Full as) = Full $ v :. as
   in foldRight (\e acc -> case e of
-                               Empty -> Empty
+                               Empty    -> Empty
                                (Full v) -> help v acc) (Full Nil)
 
 -- | Find the first element in the list matching the predicate.
@@ -292,7 +291,7 @@ lengthGT4 ::
   List a
   -> Bool
 lengthGT4 (_:._:._:._:._) = True
-lengthGT4 _ = False
+lengthGT4 _               = False
 
 
 -- | Reverse a list.
